@@ -54,8 +54,6 @@ module Parsers
         }
 
         save_ad(ad_attrs)
-      rescue StandardError => e
-        puts e
       end
     end
 

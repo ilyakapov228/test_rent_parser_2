@@ -78,7 +78,7 @@ module Parsers
       number.gsub!(',', '.') if number.include?(',')
       number.to_f.round
     rescue
-      nil
+      0.0
     end
 
     def save_ad(attributes)
