@@ -41,7 +41,6 @@ module Parsers
         # 7. Заголовок – можно взять из описания или сгенерировать
         title = "Объявление #{external_id}"
 
-        # 8. Формируем атрибуты и сохраняем
         ad_attrs = {
           external_id: external_id,
           site: 'kufar',
@@ -50,7 +49,7 @@ module Parsers
           price: price,
           address: address,
           description: description,
-          published_at: nil, # TODO
+          published_at: Time.current,
           photos: photos
         }
 
@@ -73,17 +72,28 @@ module Parsers
         site: 'kufar',
         external_id: attributes[:external_id]
       )
-      ad.assign_attributes(attributes)
-      if ad.new_record? && ad.valid?
-        ad.save!
-        # notify_telegram(ad) # TODO
+
+      if ad.new_record?
+        ad.assign_attributes(attributes)
+        if ad.valid?
+          ad.save!
+          notify_telegram(ad)
+        end
+      else
+        if ad.price != attributes[:price]
+          old_price = ad.price
+
+          ad.assign_attributes(attributes)
+          if ad.valid?
+            ad.save!
+            notify_telegram(ad, old_price:)
+          end
+        end
       end
-      ad
     end
 
-    #
-    # def notify_telegram(ad)
-    #   TelegramNotifier.notify_new_ad(ad)
-    # end
+    def notify_telegram(ad, old_price: false)
+      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
+    end
   end
 end
