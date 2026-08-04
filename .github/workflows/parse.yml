@@ -3,7 +3,6 @@ name: Run Parser
 on:
   schedule:
     - cron: '*/5 * * * *'
-  workflow_dispatch:
 
 jobs:
   parse:
