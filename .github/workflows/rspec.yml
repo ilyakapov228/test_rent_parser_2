@@ -1,0 +1,31 @@
+name: Run Parser
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.2'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Run parser
+        run: bundle exec rake parse:all
+        env:
+          DATABASE_URL: postgresql://realty_postgres_1_user:jWkQx83KrPE5XO9yQKe8bibq7N25geqe@dpg-d9ov3ftbedkc73dpet70-a.frankfurt-postgres.render.com/realty_postgres_1
+          TELEGRAM_BOT_TOKEN: 8260352245:AAG6Uu2FPUqKTdrqib_e3J_pamirVv1cKXI
+          TELEGRAM_CHAT_ID: -5402404753
+          RAILS_ENV: production
