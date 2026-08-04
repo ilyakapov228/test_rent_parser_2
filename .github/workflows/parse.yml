@@ -25,7 +25,8 @@ jobs:
       - name: Run parser
         run: bundle exec rake parse:all
         env:
-          DATABASE_URL: postgresql://realty_postgres_1_user:jWkQx83KrPE5XO9yQKe8bibq7N25geqe@dpg-d9ov3ftbedkc73dpet70-a.frankfurt-postgres.render.com/realty_postgres_1
-          TELEGRAM_BOT_TOKEN: 8260352245:AAG6Uu2FPUqKTdrqib_e3J_pamirVv1cKXI
-          TELEGRAM_CHAT_ID: -5402404753
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
