@@ -110,7 +110,7 @@ module Parsers
     end
 
     def notify_telegram(ad, old_price: false)
-      # Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
+      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
     end
   end
 end
