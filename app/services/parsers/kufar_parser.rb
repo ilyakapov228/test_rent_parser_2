@@ -8,8 +8,14 @@ module Parsers
     def parse(url)
       doc = fetch_page(url)
 
+      xpath_for_elements = if url.include? 'https://re.kufar.by/l/minskij-rajon/snyat/dom/'
+                             '//a[starts-with(@href, "https://re.kufar.by/vi/minskij-rajon/snyat/dom/")]'
+                           elsif url.include? 'https://re.kufar.by/vi/minsk/snyat/dom/'
+                             '//a[starts-with(@href, "https://re.kufar.by/vi/minsk/snyat/dom/")]'
+                           end
+
       # 1. Находим все ссылки-карточки (они же являются контейнерами для данных)
-      ad_elements = doc.xpath('//a[starts-with(@href, "https://re.kufar.by/vi/minsk/snyat/dom/")]')
+      ad_elements = doc.xpath(xpath_for_elements)
 
       ad_elements.each do |ad_link|
         href = ad_link['href']
@@ -78,7 +84,7 @@ module Parsers
           notify_telegram(ad)
         end
       else
-        if ad.price != attributes[:price]
+        unless price_range(ad).include?(attributes[:price])
           old_price = ad.price
 
           ad.assign_attributes(attributes)
@@ -90,8 +96,12 @@ module Parsers
       end
     end
 
+    def price_range(ad)
+      (ad.price - 135..ad.price + 135)
+    end
+
     def notify_telegram(ad, old_price: false)
-      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
+      # Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
     end
   end
 end

@@ -94,7 +94,7 @@ module Parsers
           notify_telegram(ad)
         end
       else
-        if ad.price != attributes[:price]
+        unless price_range(ad).include?(attributes[:price])
           old_price = ad.price
           ad.assign_attributes(attributes)
           if ad.valid?
@@ -105,8 +105,12 @@ module Parsers
       end
     end
 
+    def price_range(ad)
+      (ad.price - 135..ad.price + 135)
+    end
+
     def notify_telegram(ad, old_price: false)
-      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
+      # Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
     end
   end
 end
