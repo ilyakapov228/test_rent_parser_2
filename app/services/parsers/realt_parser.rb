@@ -3,12 +3,11 @@ module Parsers
     BASE_URL = 'https://realt.by'.freeze
 
     def self.parse(url, for_sell: false)
-      @for_sell = for_sell
-      new.parse(url)
+      new.parse(url, for_sell)
     end
 
-    def parse(url)
-      @for_sell ||= false
+    def parse(url, for_sell)
+      @for_sell = for_sell
 
       doc = fetch_page(url)
 

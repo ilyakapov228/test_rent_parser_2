@@ -1,13 +1,12 @@
 module Parsers
   class KufarParser
 
-    def self.parse(url)
-      @for_sell = for_sell
-      new.parse(url)
+    def self.parse(url, for_sell: false)
+      new.parse(url, for_sell)
     end
 
-    def parse(url)
-      @for_sell ||= false
+    def parse(url, for_sell)
+      @for_sell = for_sell
 
       doc = fetch_page(url)
 
@@ -114,7 +113,7 @@ module Parsers
     end
 
     def notify_telegram(ad, old_price: false)
-      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:, use_for_sell_chat: @for_sell)
+      # Telegram::TelegramNotifier.notify_new_ad(ad, old_price:, use_for_sell_chat: @for_sell)
     end
   end
 end
