@@ -12,15 +12,15 @@ module Parsers
 
       xpath_for_elements =
         if @for_sell
-          if url.include? 'https://re.kufar.by/l/minsk/kupit/dom/'
+          if url.include? 'https://re.kufar.by/l/minsk/kupit/dom'
             '//a[starts-with(@href, "https://re.kufar.by/vi/minsk/kupit/dom/")]'
-          elsif url.include? 'https://re.kufar.by/l/minskij-rajon/kupit/dom/'
+          elsif url.include? 'https://re.kufar.by/l/minskij-rajon/kupit/dom'
             '//a[starts-with(@href, "https://re.kufar.by/vi/minskij-rajon/kupit/dom/")]'
           end
         else
-          if url.include? 'https://re.kufar.by/l/minskij-rajon/snyat/dom/'
+          if url.include? 'https://re.kufar.by/l/minskij-rajon/snyat/dom'
             '//a[starts-with(@href, "https://re.kufar.by/vi/minskij-rajon/snyat/dom/")]'
-          elsif url.include? 'https://re.kufar.by/vi/minsk/snyat/dom/'
+          elsif url.include? 'https://re.kufar.by/vi/minsk/snyat/dom'
             '//a[starts-with(@href, "https://re.kufar.by/vi/minsk/snyat/dom/")]'
           end
         end
