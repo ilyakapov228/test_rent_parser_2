@@ -1,6 +1,7 @@
 module Parsers
   class RealtParser
     BASE_URL = 'https://realt.by'.freeze
+    MAX_PRICE_FOR_SALE = 350000
 
     def self.parse(url, for_sell: false)
       new.parse(url, for_sell)
@@ -39,6 +40,10 @@ module Parsers
         price_node = card.at_xpath('.//span[contains(@class, "text-title") and contains(@class, "font-semibold")]')
         price_text = price_node&.text&.strip
         price = extract_price(price_text)
+
+        if @for_sell
+          next if price > MAX_PRICE_FOR_SALE
+        end
 
         address_node = card.at_xpath('.//p[contains(@class, "text-basic") and contains(@class, "text-subhead")]')
         address = address_node&.text&.strip
@@ -124,8 +129,8 @@ module Parsers
       (ad.price * 0.93..ad.price * 1.07)
     end
 
-    def notify_telegram(ad, old_price: false)Telegram::TelegramNotifier.notify_new_ad(ad, old_price:, use_for_sell_chat: @for_sell)
-
+    def notify_telegram(ad, old_price: false)
+      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:, use_for_sell_chat: @for_sell)
     end
   end
 end
