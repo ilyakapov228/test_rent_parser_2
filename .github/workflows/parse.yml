@@ -29,5 +29,5 @@ jobs:
           TELEGRAM_CHAT_ID_FOR_SELL: ${{ secrets.TELEGRAM_CHAT_ID_FOR_SELL }}
           RAILS_ENV: production
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
-          PARSER_URLS: ${{ secrets.PARSER_URLS }}
+          PARSER_URLS_FOR_RENT: ${{ secrets.PARSER_URLS_FOR_RENT }}
           PARSER_URLS_FOR_SELL: ${{ secrets.PARSER_URLS_FOR_SELL }}

@@ -25,7 +25,12 @@ module Telegram
           end
           item
         end
-        send_media_group(media, use_for_sell_chat: use_for_sell_chat)
+        begin
+          send_media_group(media, use_for_sell_chat: use_for_sell_chat)
+        rescue => e
+          puts "Ошибка отправки фото (#{e.message}). Отправляем текстовое уведомление."
+          send_message(caption, use_for_sell_chat: use_for_sell_chat)
+        end
       else
         send_message(caption, use_for_sell_chat: use_for_sell_chat)
       end
