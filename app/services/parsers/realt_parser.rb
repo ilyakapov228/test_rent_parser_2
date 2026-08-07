@@ -13,9 +13,9 @@ module Parsers
       doc = fetch_page(url)
 
       xpath = if @for_sell
-                '//a[starts-with(@href, "/sale-cottages/object/")]/..'
+                '//a[contains(@aria-label, "Ссылка на объект")]/..'
               else
-                '//a[starts-with(@href, "/rent-cottage-for-long/object/")]/..'
+                '//a[contains(@aria-label, "Ссылка на объект")]/..'
               end
 
       ad_elements = doc.xpath(xpath)
@@ -76,7 +76,12 @@ module Parsers
     private
 
     def fetch_page(url)
-      response = Faraday.get(url)
+      conn = Faraday.new(url) do |faraday|
+        faraday.options.timeout = 4
+      end
+
+      response = conn.get
+
       Nokogiri::HTML(response.body)
     end
 
