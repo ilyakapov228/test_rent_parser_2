@@ -2,17 +2,33 @@ module Parsers
   class RealtParser
     BASE_URL = 'https://realt.by'.freeze
 
-    def self.parse(url)
+    def self.parse(url, for_sell: false)
+      @for_sell = for_sell
       new.parse(url)
     end
 
     def parse(url)
+      @for_sell ||= false
+
       doc = fetch_page(url)
 
-      ad_elements = doc.xpath('//a[starts-with(@href, "/rent-cottage-for-long/object/")]/..')
+      xpath = if @for_sell
+                '//a[starts-with(@href, "/sale-cottages/object/")]/..'
+              else
+                '//a[starts-with(@href, "/rent-cottage-for-long/object/")]/..'
+              end
+
+      ad_elements = doc.xpath(xpath)
 
       ad_elements.each do |card|
-        link_node = card.at_xpath('.//a[starts-with(@href, "/rent-cottage-for-long/object/")]')
+
+        xpath = if @for_sell
+                  './/a[starts-with(@href, "/sale-cottages/object/")]'
+                else
+                  './/a[starts-with(@href, "/rent-cottage-for-long/object/")]'
+                end
+
+        link_node = card.at_xpath(xpath)
         next unless link_node
 
         href = link_node['href']
@@ -39,7 +55,7 @@ module Parsers
 
         ad_attrs = {
           external_id: external_id,
-          site: 'realt',
+          site: @for_sell.present? ? 'realt_for_sell' : 'realt',
           url: full_url,
           title: title,
           price: price,
@@ -83,7 +99,7 @@ module Parsers
 
     def save_ad(attributes)
       ad = Ad.find_or_initialize_by(
-        site: 'realt',
+        site: @for_sell.present? ? 'realt_for_sell' : 'realt',
         external_id: attributes[:external_id]
       )
 
@@ -106,11 +122,11 @@ module Parsers
     end
 
     def price_range(ad)
-      (ad.price - 135..ad.price + 135)
+      (ad.price * 0.93..ad.price * 1.07)
     end
 
-    def notify_telegram(ad, old_price: false)
-      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
+    def notify_telegram(ad, old_price: false)Telegram::TelegramNotifier.notify_new_ad(ad, old_price:, use_for_sell_chat: @for_sell)
+
     end
   end
 end

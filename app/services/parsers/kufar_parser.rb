@@ -2,17 +2,30 @@ module Parsers
   class KufarParser
 
     def self.parse(url)
+      @for_sell = for_sell
       new.parse(url)
     end
 
     def parse(url)
+      @for_sell ||= false
+
       doc = fetch_page(url)
 
-      xpath_for_elements = if url.include? 'https://re.kufar.by/l/minskij-rajon/snyat/dom/'
-                             '//a[starts-with(@href, "https://re.kufar.by/vi/minskij-rajon/snyat/dom/")]'
-                           elsif url.include? 'https://re.kufar.by/vi/minsk/snyat/dom/'
-                             '//a[starts-with(@href, "https://re.kufar.by/vi/minsk/snyat/dom/")]'
-                           end
+      xpath_for_elements =
+        if @for_sell
+          if url.include? 'https://re.kufar.by/l/minsk/kupit/dom/'
+            '//a[starts-with(@href, "https://re.kufar.by/vi/minsk/kupit/dom/")]'
+          elsif url.include? 'https://re.kufar.by/l/minskij-rajon/kupit/dom/'
+            '//a[starts-with(@href, "https://re.kufar.by/vi/minskij-rajon/kupit/dom/")]'
+          end
+        else
+          if url.include? 'https://re.kufar.by/l/minskij-rajon/snyat/dom/'
+            '//a[starts-with(@href, "https://re.kufar.by/vi/minskij-rajon/snyat/dom/")]'
+          elsif url.include? 'https://re.kufar.by/vi/minsk/snyat/dom/'
+            '//a[starts-with(@href, "https://re.kufar.by/vi/minsk/snyat/dom/")]'
+          end
+        end
+
 
       # 1. Находим все ссылки-карточки (они же являются контейнерами для данных)
       ad_elements = doc.xpath(xpath_for_elements)
@@ -49,7 +62,7 @@ module Parsers
 
         ad_attrs = {
           external_id: external_id,
-          site: 'kufar',
+          site: @for_sell.present? ? 'kufar_for_sell' : 'kufar',
           url: href_cleaned || href,
           title: title,
           price: price,
@@ -73,7 +86,7 @@ module Parsers
     # общий метод сохранения объявления
     def save_ad(attributes)
       ad = Ad.find_or_initialize_by(
-        site: 'kufar',
+        site: @for_sell.present? ? 'kufar_for_sell' : 'kufar',
         external_id: attributes[:external_id]
       )
 
@@ -97,11 +110,11 @@ module Parsers
     end
 
     def price_range(ad)
-      (ad.price - 135..ad.price + 135)
+      (ad.price * 0.93..ad.price * 1.07)
     end
 
     def notify_telegram(ad, old_price: false)
-      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:)
+      Telegram::TelegramNotifier.notify_new_ad(ad, old_price:, use_for_sell_chat: @for_sell)
     end
   end
 end
