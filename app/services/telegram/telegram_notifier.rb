@@ -7,7 +7,7 @@ module Telegram
     CHAT_ID_FOR_SELL = ENV['TELEGRAM_CHAT_ID_FOR_SELL']
 
     MAX_DESCRIPTION_LENGTH = 300
-    g
+
     def self.client
       @client ||= Telegram::Bot::Client.new(TOKEN)
     end
