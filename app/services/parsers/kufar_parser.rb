@@ -10,26 +10,13 @@ module Parsers
 
       doc = fetch_page(url)
 
-      xpath_for_elements =
-        if @for_sell
-          if url.include? 'https://re.kufar.by/l/minsk/kupit/dom'
-            '//a[starts-with(@href, "https://re.kufar.by/vi/minsk/kupit/dom/")]'
-          elsif url.include? 'https://re.kufar.by/l/minskij-rajon/kupit/dom'
-            '//a[starts-with(@href, "https://re.kufar.by/vi/minskij-rajon/kupit/dom/")]'
-          end
-        else
-          if url.include? 'https://re.kufar.by/l/minskij-rajon/snyat/dom'
-            '//a[starts-with(@href, "https://re.kufar.by/vi/minskij-rajon/snyat/dom/")]'
-          elsif url.include? 'https://re.kufar.by/vi/minsk/snyat/dom'
-            '//a[starts-with(@href, "https://re.kufar.by/vi/minsk/snyat/dom/")]'
-          end
-        end
-
+      xpath_for_elements = '//div[starts-with(@class, "styles_cards__")]//section'
 
       # 1. Находим все ссылки-карточки (они же являются контейнерами для данных)
       ad_elements = doc.xpath(xpath_for_elements)
 
       ad_elements.each do |ad_link|
+        ad_link = ad_link.at_xpath('.//a')
         href = ad_link['href']
         href_cleaned = href&.split('?').first
 
@@ -90,12 +77,16 @@ module Parsers
       )
 
       if ad.new_record?
+        Rails.logger.info "Найдено новое объявление: #{attributes}"
+
         ad.assign_attributes(attributes)
         if ad.valid?
           ad.save!
           notify_telegram(ad)
         end
       else
+        Rails.logger.info "Найдено старое объявление: #{attributes}"
+
         unless price_range(ad).include?(attributes[:price])
           old_price = ad.price
 

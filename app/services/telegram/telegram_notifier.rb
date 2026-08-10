@@ -3,8 +3,8 @@ require 'telegram/bot'
 module Telegram
   class TelegramNotifier
     TOKEN = ENV['TELEGRAM_BOT_TOKEN']
-    CHAT_ID = ENV['TELEGRAM_CHAT_ID']
-    CHAT_ID_FOR_SELL = ENV['TELEGRAM_CHAT_ID_FOR_SELL']
+    CHAT_ID_FOR_RENT = ENV['TELEGRAM_CHAT_ID_FOR_RENT']
+    CHAT_ID_FOR_SALE = ENV['TELEGRAM_CHAT_ID_FOR_SALE']
 
     MAX_DESCRIPTION_LENGTH = 300
 
@@ -38,7 +38,7 @@ module Telegram
 
     def self.send_message(text, use_for_sell_chat: false)
       client.api.send_message(
-        chat_id: use_for_sell_chat ? CHAT_ID_FOR_SELL : CHAT_ID,
+        chat_id: use_for_sell_chat ? CHAT_ID_FOR_SALE : CHAT_ID_FOR_RENT,
         text: text,
         parse_mode: 'HTML'
       )
@@ -46,7 +46,7 @@ module Telegram
 
     def self.send_media_group(media, use_for_sell_chat: false)
       client.api.send_media_group(
-        chat_id: use_for_sell_chat ? CHAT_ID_FOR_SELL : CHAT_ID,
+        chat_id: use_for_sell_chat ? CHAT_ID_FOR_SALE : CHAT_ID_FOR_RENT,
         media: media
       )
     end
@@ -54,7 +54,7 @@ module Telegram
     def self.format_message(ad, old_price = nil)
       header = old_price.present? ? "Цена изменилась! Старая цена: #{old_price}" : 'Новое объявление!'
       source = ad.url.include?('kufar') ? 'Kufar' : 'Realt'
-      price_in_usd = (ad.price.to_f / 2.93).to_i
+      price_in_usd = (ad.price.to_f / 2.95).to_i
 
       # Build the message without description first
       message = <<~MSG

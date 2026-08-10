@@ -25,9 +25,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_CHAT_ID_FOR_SELL: ${{ secrets.TELEGRAM_CHAT_ID_FOR_SELL }}
+          TELEGRAM_CHAT_ID_FOR_RENT: ${{ secrets.TELEGRAM_CHAT_ID_FOR_RENT }}
+          TELEGRAM_CHAT_ID_FOR_SALE: ${{ secrets.TELEGRAM_CHAT_ID_FOR_SALE }}
           RAILS_ENV: production
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           PARSER_URLS_FOR_RENT: ${{ secrets.PARSER_URLS_FOR_RENT }}
-          PARSER_URLS_FOR_SELL: ${{ secrets.PARSER_URLS_FOR_SELL }}
+          PARSER_URLS_FOR_SALE: ${{ secrets.PARSER_URLS_FOR_SALE }}

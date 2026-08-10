@@ -12,11 +12,7 @@ module Parsers
 
       doc = fetch_page(url)
 
-      xpath = if @for_sell
-                '//a[contains(@aria-label, "Ссылка на объект")]/..'
-              else
-                '//a[contains(@aria-label, "Ссылка на объект")]/..'
-              end
+      xpath = '//a[contains(@aria-label, "Ссылка на объект")]/..'
 
       ad_elements = doc.xpath(xpath)
 
@@ -87,7 +83,6 @@ module Parsers
 
     def fetch_photos_from_details(url)
       doc = fetch_page(url)
-      # Берём все img, чей src содержит путь к фото на CDN
       doc.css('img[src*="cdn.realt.by/img/"]').map { |img| img['src'] }.compact.uniq[..9] # first 10 only
     rescue => e
       Rails.logger.warn "Не удалось загрузить фото для #{url}: #{e.message}"
@@ -113,12 +108,16 @@ module Parsers
       )
 
       if ad.new_record?
+        Rails.logger.info "Найдено новое объявление: #{attributes}"
+
         ad.assign_attributes(attributes)
         if ad.valid?
           ad.save!
           notify_telegram(ad)
         end
       else
+        Rails.logger.info "Найдено старое объявление: #{attributes}"
+
         unless price_range(ad).include?(attributes[:price])
           old_price = ad.price
           ad.assign_attributes(attributes)

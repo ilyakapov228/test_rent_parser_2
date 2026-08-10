@@ -3,7 +3,7 @@ namespace :parse do
   task all: :environment do
 
     urls = ENV['PARSER_URLS_FOR_RENT']&.split(',') || []
-    urls_for_sell = ENV['PARSER_URLS_FOR_SELL']&.split(',') || []
+    urls_for_sale = ENV['PARSER_URLS_FOR_SALE']&.split(',') || []
 
     urls.each do |url|
       if url.include?('realt')
@@ -25,7 +25,7 @@ namespace :parse do
       end
     end
 
-    urls_for_sell.each do |url|
+    urls_for_sale.each do |url|
       if url.include?('realt')
         parser = Parsers::RealtParser
       elsif url.include?('kufar')
